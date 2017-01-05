@@ -1,16 +1,4 @@
-"""
-An example demonstrating a stand-alone "console".
 
-Copyright (c) Jupyter Development Team.
-Distributed under the terms of the Modified BSD License.
-
-Example
--------
-
-To run the example, see the instructions in the README to build it. Then
-run ``python main.py``.
-
-"""
 import os
 import sys
 import threading
