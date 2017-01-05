@@ -1,6 +1,7 @@
 
 import os
 import sys
+import time
 import threading
 
 from tornado import ioloop
@@ -69,16 +70,17 @@ def run_selenium(url, callback):
     driver.get(url)
 
     failures = None
-    try:
-        print('Running Tests')
-        WebDriverWait(driver, 10).until(
-            EC.title_contains('Test completed:')
-        )
-        failures = int(driver.title.split()[-1])
-    finally:
+
+    # Start a poll loop.
+    t0 = time.time()
+    while time.time() < t0 + 10:
         for entry in driver.get_log('browser'):
             print(entry)
-        driver.quit()
+        if 'Test completed:' in driver.title:
+            break
+        time.sleep(500e-3)
+
+    driver.quit()
 
     if failures is None:
         print('Test timed out')
