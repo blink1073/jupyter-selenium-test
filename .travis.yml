@@ -35,5 +35,6 @@ install:
 
 script:
   - python -m SimpleHTTPServer 8000 &
+  - sleep 3
   - python test.py
   - pkill -9 python
