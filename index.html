@@ -26,11 +26,7 @@
       });
 
       mocha.run(function(failures) {
-        console.log('done');
-        var el = document.createElement('div');
-        el.id = 'myDynamicElement';
-        el.textContent = String(failures);
-        document.body.appendChild(el);
+        document.title = 'Test completed: ' + String(failures);
       });
 
     </script>

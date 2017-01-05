@@ -71,10 +71,10 @@ def run_selenium(url, callback):
     failures = None
     try:
         print('Running Tests')
-        element = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.ID, "myDynamicElement"))
+        WebDriverWait(driver, 10).until(
+            EC.title_contains('Test completed:')
         )
-        failures = int(element.text)
+        failures = int(driver.title.split()[-1])
     finally:
         for entry in driver.get_log('browser'):
             print(entry)
