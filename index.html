@@ -6,6 +6,8 @@
   <body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mocha/3.2.0/mocha.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/expect.js/0.2.0/expect.min.js"></script>
+    <script src="https://unpkg.com/@jupyterlab/services@^0.34/dist/index.js"></script>
+    <script id='jupyter-config-data' type="application/json">{ "baseUrl": "{{base_url}}", "token": "{{token}}"}</script>
     <script>
     mocha.setup({
       ui: 'bdd',
@@ -13,14 +15,16 @@
     })
     </script>
     <script>
-    console.warn('here')
-    describe('Array', function() {
-        it('should start empty', function() {
-          // Test implementation goes here
-          console.log('hi');
-          //throw new Error('no');
+      describe('Start Kernel', function() {
+
+        it('should start a kernel', function(done) {
+          window["@jupyterlab/services"].Kernel.startNew().then(function(kernel) { 
+            return kernel.shutdown();
+          }).then(done, done);
         });
+
       });
+
       mocha.run(function(failures) {
         console.log('done');
         var el = document.createElement('div');
@@ -28,6 +32,7 @@
         el.textContent = String(failures);
         document.body.appendChild(el);
       });
+
     </script>
   </body>
 </html>

@@ -37,7 +37,8 @@ class TestHandler(IPythonHandler):
     def get(self):
         """Get the main page for the application's interface."""
         return self.write(self.render_template("index.html",
-            static=self.static_url, base_url=self.base_url))
+            static=self.static_url, base_url=self.base_url,
+            token=self.settings['token']))
 
     def get_template(self, name):
         return LOADER.load(self.settings['jinja2_env'], name)
@@ -82,7 +83,7 @@ def run_selenium(url, callback):
     failures = None
     try:
         print('Running Tests')
-        element = WebDriverWait(driver, 1).until(
+        element = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "myDynamicElement"))
         )
         failures = int(element.text)
