@@ -32,10 +32,8 @@ before_install:
   - sleep 3
 
 install:
-  - pip install selenium
+  - pip install selenium notebook
 
 script:
-  - python -m SimpleHTTPServer 8000 &
-  - sleep 3
   - python test.py
   - pkill -9 python
