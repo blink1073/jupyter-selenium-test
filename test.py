@@ -7,9 +7,7 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 # Enable browser logging (requires Chrome).
 d = DesiredCapabilities.CHROME
 d['loggingPrefs'] = {'browser': 'ALL'}
-#driver = webdriver.Chrome(desired_capabilities=d)
-
-driver = webdriver.Chrome()
+driver = webdriver.Chrome(desired_capabilities=d)
 driver.get("http://0.0.0.0:8000")
 
 
@@ -20,8 +18,8 @@ try:
     )
     failures = int(element.text)
 finally:
-    # for entry in driver.get_log('browser'):
-    #     print(entry)
+    for entry in driver.get_log('browser'):
+        print(entry)
     driver.quit()
 
 
