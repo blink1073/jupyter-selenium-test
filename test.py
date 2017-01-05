@@ -44,7 +44,7 @@ class TestApp(NotebookApp):
         default_handlers = [
             (r'/test/?', TestHandler),
             (r"/test/(.*)", FileFindHandler,
-                {'path': 'build'}),
+                {'path': ''}),
         ]
         self.web_app.add_handlers(".*$", default_handlers)
         self.io_loop.call_later(1, self._run_selenium)

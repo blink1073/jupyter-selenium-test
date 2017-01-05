@@ -16,24 +16,11 @@
       fullTrace: true
     })
     </script>
+    <script src="test/test.js"></script>
     <script>
-
-      describe('outer', function() {
-        describe('Start Kernel', function() {
-
-          it('should start a kernel', function(done) {
-            window["@jupyterlab/services"].Kernel.startNew().then(function(kernel) { 
-              return kernel.shutdown();
-            }).then(done, done);
-          });
-
-        });
-      });
-
       mocha.run(function(failures) {
         document.title = 'Test completed: ' + String(failures);
       });
-
     </script>
   </body>
 </html>
