@@ -2,17 +2,16 @@
 <html>
   <head>
     <title>Mocha Tests</title>
-    <link rel="stylesheet" href="node_modules/mocha/mocha.css">
   </head>
   <body>
-    <div id="mocha"></div>
-    <script src="node_modules/mocha/mocha.js"></script>
-    <script src="node_modules/chai/chai.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mocha/3.2.0/mocha.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/expect.js/0.2.0/expect.min.js"></script>
     <script>
     mocha.setup({
       ui: 'bdd',
       reporter: 'json-stream'
-    })</script>
+    })
+    </script>
     <script>
     console.warn('here')
     describe('Array', function() {
