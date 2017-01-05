@@ -8,25 +8,22 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 d = DesiredCapabilities.CHROME
 d['loggingPrefs'] = {'browser': 'ALL'}
 
-print('1')
+print('Starting Chrome Driver')
 driver = webdriver.Chrome(desired_capabilities=d)
-print('2')
+
+print('Navigating to page')
 driver.get("http://0.0.0.0:8000")
-print('3')
 
 failures = None
 try:
-    print('4')
+    print('Running Tests')
     element = WebDriverWait(driver, 1).until(
         EC.presence_of_element_located((By.ID, "myDynamicElement"))
     )
-    print('5')
     failures = int(element.text)
 finally:
-    print('6')
     for entry in driver.get_log('browser'):
         print(entry)
-    print('7')
     driver.quit()
 
 
