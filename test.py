@@ -1,4 +1,5 @@
 
+import json
 import os
 import sys
 import time
@@ -75,10 +76,19 @@ def run_selenium(url, callback):
     t0 = time.time()
     while time.time() < t0 + 10:
         for entry in driver.get_log('browser'):
-            print(entry)
+            t0 = time.time()
+            msg = ' '.join(entry['message'].split()[2:])
+            if msg == '"stdout:"':
+                continue
+            try:
+                msg = json.loads(msg)
+            except Exception:
+                pass
+            print(msg)
         if 'Test completed:' in driver.title:
+            failures = int(driver.title.split()[-1])
             break
-        time.sleep(500e-3)
+        time.sleep(1.)
 
     driver.quit()
 

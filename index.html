@@ -11,18 +11,23 @@
     <script>
     mocha.setup({
       ui: 'bdd',
-      reporter: 'json-stream'
+      reporter: 'json-stream',
+      retries: 1,
+      fullTrace: true
     })
     </script>
     <script>
-      describe('Start Kernel', function() {
 
-        it('should start a kernel', function(done) {
-          window["@jupyterlab/services"].Kernel.startNew().then(function(kernel) { 
-            return kernel.shutdown();
-          }).then(done, done);
+      describe('outer', function() {
+        describe('Start Kernel', function() {
+
+          it('should start a kernel', function(done) {
+            window["@jupyterlab/services"].Kernel.startNew().then(function(kernel) { 
+              return kernel.shutdown();
+            }).then(done, done);
+          });
+
         });
-
       });
 
       mocha.run(function(failures) {
