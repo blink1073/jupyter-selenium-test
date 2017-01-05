@@ -34,4 +34,6 @@ install:
   - pip install selenium
 
 script:
+  - python -m SimpleHTTPServer 8000 &
   - python test.py
+  - pkill -9 python
