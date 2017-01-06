@@ -39,8 +39,8 @@ def red(text):
     return '\033[31m%s\033[0m' % text
 
 
-PASS = green('\u221A')  # check mark
-FAIL = red('\u00D7')  # x mark
+PASS = green('\u221A' if os.name == 'nt' else '✓')
+FAIL = red('\u00D7' if os.name == 'nt' else '✖')
 
 
 class TestHandler(IPythonHandler):
