@@ -1,4 +1,5 @@
 
+# -*- coding: utf-8 -*-
 from __future__ import print_function, absolute_import
 
 import json
@@ -39,8 +40,8 @@ def red(text):
     return '\033[31m%s\033[0m' % text
 
 
-PASS = green('\u221A' if os.name == 'nt' else u'✓')
-FAIL = red('\u00D7' if os.name == 'nt' else u'✖')
+PASS = green('\u221A' if os.name == 'nt' else '✓')
+FAIL = red('\u00D7' if os.name == 'nt' else '✖')
 
 
 class TestHandler(IPythonHandler):
