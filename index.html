@@ -18,8 +18,23 @@
     </script>
     <script src="test/test.js"></script>
     <script>
+      // Workaround for 
+      // https://bugs.chromium.org/p/chromedriver/issues/detail?id=669.
+      _log = console.log;
+      console.log = function() {
+        var args = [];
+        for (i = 0; i < arguments.length; i++) {
+          var arg = arguments[i];
+          if (typeof arg !== 'string') {
+            arg = JSON.stringify(arg);
+          }
+          args.push(arg);
+        }
+        _log(args.join(' ')); 
+      }
+
       mocha.run(function(failures) {
-        document.title = 'Test completed: ' + String(failures);
+        document.title = 'Test completed';
       });
     </script>
   </body>

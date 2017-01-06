@@ -1,4 +1,6 @@
 
+from __future__ import print_function, absolute_import
+
 import json
 import os
 import sys
@@ -12,13 +14,26 @@ from notebook.notebookapp import NotebookApp
 from traitlets import Bool, Unicode
 
 from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+
+try:
+    import coloroma
+    coloroma.init()
+except ImportError:
+    pass
 
 
 LOADER = FileSystemLoader(os.path.dirname(__file__))
+GREEN_OK = '\033[32m\u221A\033[0m'
+RED_X = '\033[31m\u00D7\033[0m'
+
+
+def green(text):
+    return '\033[32m%s\033[0m' % text
+
+
+def red(text):
+    return '\033[31m%s\033[0m' % text
 
 
 class TestHandler(IPythonHandler):
@@ -60,6 +75,9 @@ class TestApp(NotebookApp):
 
 
 def run_selenium(url, callback):
+    """Run the selenium test and call the callback with the exit code.exit
+    """
+
     # Enable browser logging (requires Chrome).
     d = DesiredCapabilities.CHROME
     d['loggingPrefs'] = {'browser': 'ALL'}
@@ -67,40 +85,67 @@ def run_selenium(url, callback):
     print('Starting Chrome Driver')
     driver = webdriver.Chrome(desired_capabilities=d)
 
-    print('Navigating to page', url)
+    print('Navigating to page:', url)
     driver.get(url)
 
-    failures = None
+    failures = []
+    passes = 0
+    completed = False
 
     # Start a poll loop.
     t0 = time.time()
-    while time.time() < t0 + 10:
+    tlast = t0
+    while time.time() < tlast + 10:
         for entry in driver.get_log('browser'):
-            t0 = time.time()
+            tlast = time.time()
+            # Parse the log entry.
             msg = ' '.join(entry['message'].split()[2:])
-            if msg == '"stdout:"':
-                continue
             try:
                 msg = json.loads(msg)
+                # This is the end message.
+                if msg.startswith('stdout: '):
+                    msg = msg[len('stdout: '):]
+                msg = json.loads(msg)
+                if msg[0] == 'pass':
+                    msg = '%s %s (%dms)' % (GREEN_OK,
+                                            msg[1]['fullTitle'],
+                                            msg[1]['duration'])
+                    passes += 1
+                elif msg[0] == 'fail':
+                    failures.append(msg[1])
+                    msg = '%s %s' % (RED_X, red(msg[1]['fullTitle']))
             except Exception:
                 pass
             print(msg)
-        if 'Test completed:' in driver.title:
-            failures = int(driver.title.split()[-1])
-            break
-        time.sleep(1.)
 
+        if 'Test completed' in driver.title:
+            completed = True
+            break
+
+        # Avoid hogging the main thread.
+        time.sleep(0.5)
+
+    duration = time.time() - t0
     driver.quit()
 
-    if failures is None:
+    # Handle the test results.
+    print('\n\n')
+    if not completed:
         print('Test timed out')
-        failures = 1
     elif failures:
-        print('%s Test(s) failed!' % failures)
+        total = len(failures) + passes
+        errmsg = '%s of %s tests failed' % (len(failures), total)
+        print('%s %s:' % (RED_X, red(errmsg)))
+        for failure in failures:
+            print('\n%s: %s' % (failure['fullTitle'], red(failure['err'])))
+            print('\n%s' % failure['stack'])
     else:
-        print('Tests passed!')
+        print('%s %s (%dms)' % (
+            GREEN_OK, green('%d tests completed' % passes), duration * 1000))
+    print('\n\n')
 
-    if failures:
+    # Return the exit code.
+    if not completed or failures:
         callback(1)
     else:
         callback(0)
