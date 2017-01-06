@@ -19,21 +19,28 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 try:
     import coloroma
     coloroma.init()
+    COLOR = True
 except ImportError:
-    pass
+    COLOR = os.name != 'nt'
 
 
 LOADER = FileSystemLoader(os.path.dirname(__file__))
-GREEN_OK = '\033[32m\u221A\033[0m'
-RED_X = '\033[31m\u00D7\033[0m'
 
 
 def green(text):
+    if not COLOR:
+        return text
     return '\033[32m%s\033[0m' % text
 
 
 def red(text):
+    if not COLOR:
+        return text
     return '\033[31m%s\033[0m' % text
+
+
+PASS = green('\u221A')  # check mark
+FAIL = red('\u00D7')  # x mark
 
 
 class TestHandler(IPythonHandler):
@@ -107,13 +114,13 @@ def run_selenium(url, callback):
                     msg = msg[len('stdout: '):]
                 msg = json.loads(msg)
                 if msg[0] == 'pass':
-                    msg = '%s %s (%dms)' % (GREEN_OK,
+                    msg = '%s %s (%dms)' % (PASS,
                                             msg[1]['fullTitle'],
                                             msg[1]['duration'])
                     passes += 1
                 elif msg[0] == 'fail':
                     failures.append(msg[1])
-                    msg = '%s %s' % (RED_X, red(msg[1]['fullTitle']))
+                    msg = '%s %s' % (FAIL, red(msg[1]['fullTitle']))
             except Exception:
                 pass
             print(msg)
@@ -135,13 +142,13 @@ def run_selenium(url, callback):
     elif failures:
         total = len(failures) + passes
         errmsg = '%s of %s tests failed' % (len(failures), total)
-        print('%s %s:' % (RED_X, red(errmsg)))
+        print('%s %s:' % (FAIL, red(errmsg)))
         for failure in failures:
             print('\n%s: %s' % (failure['fullTitle'], red(failure['err'])))
             print('\n%s' % failure['stack'])
     else:
         print('%s %s (%dms)' % (
-            GREEN_OK, green('%d tests completed' % passes), duration * 1000))
+            PASS, green('%d tests completed' % passes), duration * 1000))
     print('\n\n')
 
     # Return the exit code.
