@@ -87,6 +87,8 @@ def run_selenium(url, callback):
     """
 
     # Enable browser logging (requires Chrome).
+    # Firefox 48+ does not support this:
+    # https://github.com/mozilla/geckodriver/issues/284
     d = DesiredCapabilities.CHROME
     d['loggingPrefs'] = {'browser': 'ALL'}
 
@@ -134,6 +136,19 @@ def run_selenium(url, callback):
         time.sleep(0.5)
 
     duration = time.time() - t0
+
+    # Get coverage data.
+    # # https://github.com/gotwarlost/istanbul/issues/16#issuecomment-9879731
+    coverage = driver.execute_script("return window.__coverage__;")
+    if coverage:
+        print(coverage)
+        # save to `coverage_folder/coverage.json`
+        # run `istanbul report --root %s --dir %s lcov`
+        # run `istanbul report --root %s --dir %s text-summary`
+        # my have to worry about relative file paths and shuffle
+        # the coverage file location
+        pass
+
     driver.quit()
 
     # Handle the test results.
@@ -157,18 +172,6 @@ def run_selenium(url, callback):
         callback(1)
     else:
         callback(0)
-
-
-# Coverage handling.
-#
-# istanbul instrument src.original.js --output src.js --embed-source true
-#
-# https://github.com/gotwarlost/istanbul/issues/16#issuecomment-9879731
-#
-# driver.executeScript("return window.__coverage__;").then(function (obj) {
-#     fs.writeFile('coverage/coverage.json', JSON.stringify(obj));
-#     driver.quit();
-# });
 
 
 if __name__ == '__main__':
